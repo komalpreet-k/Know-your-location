@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Your Location</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin=""/> 
+    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js" integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA==" crossorigin=""></script>
+    <style>
+        #mapid { height: 600px; border-color: bisque; margin-left: 30%; margin-bottom: 20px; }
+        h1{font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-style: initial; color: blueviolet;}
+        button{ background-color: rgb(141, 141, 141); height: 40px; width: 60px; border-radius: 4pc; box-shadow: 5pc; }
+    </style>
+
+    <script>
+        const Mapping = {
+            map : null,
+            initializeMap : () => {
+                Mapping.map = L.map('mapid').setView([51.505, -0.09], 13);
+                L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                    subdomains: ['a','b','c']
+                }).addTo( Mapping.map );
+            },
+            resetLocation : ({lat,lon}) => {
+                Mapping.map.setView([lat,lon], 13);
+            }
+        }
+
+        window.onload = () => {
+            Mapping.initializeMap();
+
+            userCode();
+        }
+
+        function userCode() {
+            // JS CODE START
+        let locate=localStorage.getItem("myLocation");
+        console.log(locate);
+        if(!(locate==null)){
+            Mapping.resetLocation(JSON.parse(localStorage.getItem("myLocation")));
+        }
+        let button= document.getElementById("b");
+        button.addEventListener("click", ()=>{
+        navigator.geolocation.getCurrentPosition(show);
+        function show(position){
+             let Latitude= position.coords.latitude;
+             let Longitude = position.coords.longitude;
+             let location= {
+                 "lat": Latitude,
+                 "lon": Longitude
+             }
+             localStorage.setItem("myLocation", JSON.stringify(location));
+             console.log(JSON.parse(localStorage.getItem("myLocation")));
+             Mapping.resetLocation(JSON.parse(localStorage.getItem("myLocation")));
+        }
+        }
+        );
+        }
+
+    </script>
+</head>
+<body style="background-color: black; text-align: center;">
+    <h1> Find your Location</h1>
+    <div id="mapid" style="width: 600px; height: 400px;"></div>
+    <button id="b">click</button>
+</body>
+</html>
